@@ -1,0 +1,45 @@
+
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MockBank — Dashboard</title><link rel="stylesheet" href="style.css"></head>
+<body>
+  <nav class="nav">
+    <div class="nav-brand">MockBank</div>
+    <div class="nav-links">
+      <a href="dashboard.html" class="active">Overview</a>
+      <a href="transactions.html">Transactions</a>
+      <a href="transfer.html">Transfer</a>
+      <a href="profile.html">Profile</a>
+      <button id="logoutNav" class="nav-cta">Log out</button>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="grid">
+      <section class="card">
+        <h3>Available balance</h3>
+        <div class="balance" id="balanceDisplay">$0.00</div>
+        <p class="muted">Primary Checking • **** 4321</p>
+        <div class="small muted">Routing: <strong id="routing">----</strong> • Account: <strong id="acct">----</strong></div>
+      </section>
+
+      <section class="card">
+        <h3>Quick actions</h3>
+        <div class="actions">
+          <button onclick="goTo('transfer.html')">Transfer money</button>
+          <button onclick="goTo('transactions.html')">View transactions</button>
+        </div>
+        <h4 style="margin-top:16px">Recent activity</h4>
+        <div id="recentList" class="list muted">Loading...</div>
+      </section>
+
+      <section class="card full">
+        <h3>Monthly snapshot</h3>
+        <div id="snapshot" class="muted">Demo snapshot — no live data.</div>
+      </section>
+    </div>
+  </main>
+
+<script src="script.js"></script>
+</body>
+</html>
