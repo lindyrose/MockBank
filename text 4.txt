@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mock Bank — Demo</title>
+<style>
+  :root{font-family:Inter, "Segoe UI", Roboto, Arial; --bg:#f3f6fb; --card:#ffffff; --accent:#2b6ef6; --muted:#6b7280;}
+  body{margin:0; background:linear-gradient(180deg,#eef4ff 0%, #f8fbff 100%); display:flex; align-items:center; justify-content:center; height:100vh;}
+  .wrap{width:960px; max-width:96%; display:flex; gap:32px; align-items:stretch;}
+  .left{flex:1; background:var(--card); padding:32px; border-radius:12px; box-shadow:0 6px 20px rgba(18,38,63,0.08);}
+  .brand{font-weight:700; font-size:20px; color:var(--accent); margin-bottom:12px;}
+  h2{margin:0 0 16px 0;}
+  label{display:block; font-size:13px; color:var(--muted); margin:12px 0 6px;}
+  input[type="text"], input[type="password"]{width:100%; padding:12px 14px; border-radius:8px; border:1px solid #e6e9ef; font-size:14px; box-sizing:border-box;}
+  button{margin-top:16px; padding:12px 16px; border-radius:10px; border:0; background:var(--accent); color:white; font-weight:600; cursor:pointer;}
+  .muted{color:var(--muted); font-size:13px;}
+  .right{width:420px; background:linear-gradient(180deg,#ffffff,#fbfdff); padding:28px; border-radius:12px; box-shadow:0 6px 20px rgba(18,38,63,0.04);}
+  .balance{font-size:28px; font-weight:700; margin-top:8px;}
+  .small{font-size:13px; color:var(--muted);}
+  .hidden{display:none;}
+  .center{display:flex; align-items:center; justify-content:center;}
+  .link{background:none;border:0;color:var(--accent);cursor:pointer;padding:0;font-weight:600;}
+  .notice{font-size:12px;color:#9aa4b5;margin-top:10px;}
+  .card{background:#f8fbff;padding:14px;border-radius:10px;margin-top:12px;border:1px solid #eef4ff}
+  .field-row{display:flex; gap:8px;}
+  .success{color:green;font-weight:600;margin-top:12px}
+  .error{color:#b91c1c;font-weight:600;margin-top:12px}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="left" id="login-card">
+      <div class="brand">MockBank — Demo</div>
+      <h2>Sign in</h2>
+      <div class="muted">For demo purposes only. Save the file locally and open in your browser.</div>
+
+      <label for="username">Username</label>
+      <input id="username" type="text" autocomplete="username" placeholder="Enter username" />
+
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" placeholder="Enter password" />
+
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-top:12px;">
+        <div class="small">Forgot password?</div>
+        <button id="signin-btn">Sign In</button>
+      </div>
+
+      <div class="notice">Demo account details are embedded in this local page for prototyping only.</div>
+
+      <div id="login-message" class="error hidden"></div>
+
+      <!-- Password recovery panel -->
+      <div id="recovery-panel" class="hidden" style="margin-top:18px;">
+        <div class="card">
+          <div style="font-weight:700">Password recovery (Demo)</div>
+          <div class="small" style="margin-top:8px;">Security question: What is your pet name?</div>
+          <input id="recovery-answer" type="text" placeholder="Enter answer" style="margin-top:8px;" />
+          <div style="display:flex; gap:8px; margin-top:10px;">
+            <button id="recovery-check">Submit</button>
+            <button id="recovery-cancel" class="link">Cancel</button>
+          </div>
+          <div id="recovery-message" class="error hidden"></div>
+        </div>
+      </div>
+
+      <div style="margin-top:18px;">
+        <button id="show-recovery" class="link">I forgot my password</button>
+      </div>
+    </div>
+
+    <div class="right" id="dashboard" style="display:none;">
+      <div style="display:flex; align-items:center; justify-content:space-between;">
+        <div>
+          <div class="brand">MockBank</div>
+          <div class="small">Primary Checking • **** 4321</div>
+        </div>
+        <div class="small">Welcome, <span id="display-user"></span></div>
+      </div>
+
+      <div style="margin-top:18px;">
+        <div class="small">Available balance</div>
+        <div class="balance" id="balance-amount">$0.00</div>
+
+        <div class="card">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div class="small">Recent activity</div>
+              <div style="margin-top:8px;">
+                <div class="small">No recent transactions — this is a demo.</div>
+              </div>
+            </div>
+            <div>
+              <button id="logout" style="background:none;border:0;color:var(--accent);cursor:pointer;font-weight:700;">Log out</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="secret" class="hidden" style="margin-top:12px;">
+          <div class="small">Security Q/A (demo): pet name — <strong>xena</strong></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<script>
+/*
+  DEMO NOTES:
+  - This is a purely client-side mock for prototyping only.
+  - Demo credentials (embedded here only for demonstration):
+      username: bobeda15
+      password: Bobeda65$$1
+      security Q: pet name
+      security A: xena
+    Do NOT use these on any production system.
+*/
+
+const DEMO = {
+  username: "bobeda15",
+  password: "Bobeda65$$1",
+  securityQuestion: "pet name",
+  securityAnswer: "xena",
+  balance: 650789.79
+};
+
+const $ = id => document.getElementById(id);
+
+const signinBtn = $('signin-btn');
+const usernameInput = $('username');
+const passwordInput = $('password');
+const loginMessage = $('login-message');
+const dashboard = $('dashboard');
+const loginCard = $('login-card');
+const balanceEl = $('balance-amount');
+const displayUser = $('display-user');
+const logoutBtn = $('logout');
+const showRecovery = $('show-recovery');
+const recoveryPanel = $('recovery-panel');
+const recoveryCheck = $('recovery-check');
+const recoveryCancel = $('recovery-cancel');
+const recoveryMessage = $('recovery-message');
+const recoveryAnswer = $('recovery-answer');
+
+function formatCurrency(n){
+  return n.toLocaleString('en-US', {style:'currency', currency:'USD'});
+}
+
+function showError(msg){
+  loginMessage.textContent = msg;
+  loginMessage.classList.remove('hidden');
+}
+function hideError(){
+  loginMessage.classList.add('hidden');
+}
+signinBtn.addEventListener('click', () => {
+  hideError();
+  const u = usernameInput.value.trim();
+  const p = passwordInput.value;
+  if(!u || !p){ showError('Please enter username and password.'); return; }
+  // Client-side demo auth check
+  if(u === DEMO.username && p === DEMO.password){
+    // Successful demo login
+    loginCard.style.display = 'none';
+    dashboard.style.display = 'block';
+    balanceEl.textContent = formatCurrency(DEMO.balance);
+    displayUser.textContent = DEMO.username;
+    // Clear inputs for safety
+    usernameInput.value = '';
+    passwordInput.value = '';
+    // Optionally show that this is a demo
+    $('secret').classList.remove('hidden');
+  } else {
+    showError('Incorrect username or password (demo). Try recovery if needed.');
+  }
+});
+
+// Recovery flow
+showRecovery.addEventListener('click', () => {
+  recoveryPanel.classList.remove('hidden');
+  showRecovery.classList.add('hidden');
+});
+recoveryCancel.addEventListener('click', () => {
+  recoveryPanel.classList.add('hidden');
+  showRecovery.classList.remove('hidden');
+  recoveryMessage.classList.add('hidden');
+  recoveryAnswer.value = '';
+});
+recoveryCheck.addEventListener('click', () => {
+  recoveryMessage.classList.add('hidden');
+  const ans = recoveryAnswer.value.trim().toLowerCase();
+  if(!ans){ recoveryMessage.textContent = 'Please enter an answer.'; recoveryMessage.classList.remove('hidden'); return; }
+  if(ans === DEMO.securityAnswer.toLowerCase()){
+    // In a real system you would verify identity and reset password via secure server.
+    recoveryMessage.textContent = 'Security answer verified (demo). You may sign in with the demo password.';
+    recoveryMessage.classList.remove('hidden');
+    recoveryMessage.classList.remove('error');
+    recoveryMessage.classList.add('success');
+  } else {
+    recoveryMessage.textContent = 'Incorrect answer (demo).';
+    recoveryMessage.classList.remove('hidden');
+    recoveryMessage.classList.remove('success');
+    recoveryMessage.classList.add('error');
+  }
+});
+
+// logout
+logoutBtn.addEventListener('click', () => {
+  dashboard.style.display = 'none';
+  loginCard.style.display = 'block';
+  recoveryPanel.classList.add('hidden');
+  showRecovery.classList.remove('hidden');
+  recoveryMessage.classList.add('hidden');
+});
+</script>
+</body>
+</html>
